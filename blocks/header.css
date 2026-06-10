@@ -1,0 +1,36 @@
+.header {
+  max-width: 880px;
+  margin: 45px auto auto;
+  border-width: 1px;
+}
+.header__image {
+  max-width: 173px;
+  margin: 45px auto auto;
+}
+.header__line {
+  max-width: 880px;
+  opacity: 0.7;
+  border-bottom: 1px solid #545454;
+  margin-top: 41px;
+}
+
+@media screen and (max-width: 880px) {
+  .header {
+    margin: 45px auto auto;
+  }
+}
+@media screen and (max-width: 320px) {
+  .header {
+    max-width: 320px;
+    margin-top: 28px;
+  }
+  .header__image {
+    max-width: 126px;
+    margin-top: 28px;
+  }
+  .header__line {
+    max-width: 320px;
+    margin-top: 84px;
+  }
+}
+

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EUA Afora" />
+    <meta name="keywords" content="Afora, sprint" />
+    <meta name="author" content="Lucas Brum" />
+    <link rel="stylesheet" href="./pages/index.css" type="text/css" />
+    <title>EUA Afora</title>
+  </head>
+  <body>
+    <div class="page">
+      <div class="page__content">
+        <header class="header">
+          <img
+            class="header__image"
+            src="./images/logo.svg"
+            alt="imagem Around"
+          />
+          <div class="header__line"></div>
+        </header>
+        <main class="content">
+          <div class="profile">
+            <img
+              class="profile__avatar"
+              src="./images/avatar.jpg"
+              alt="imagem jacques"
+            />
+            <div class="profile__info">
+              <h1 class="profile__title">Jacques Cousteau</h1>
+              <p class="profile__text">Explorador</p>
+              <button class="profile__edit-button" type="button"></button>
+            </div>
+            <button class="profile__add-button"></button>
+          </div>
+          <section class="elements"></section>
+        </main>
+        <footer class="footer">
+          <p class="footer__copyright">&copy; 2025 Around The U.S.</p>
+        </footer>
+      </div>
+    </div>
+    <div class="popup" id="edit-pop-up">
+      <div class="popup__container">
+        <button
+          class="popup__button"
+          aria-label="Close Popup"
+          type="button"
+        ></button>
+        <h2 class="popup__title">Editar Perfil</h2>
+        <form class="popup__form" id="popup_form" novalidate>
+          <input
+            type="text"
+            class="popup__input"
+            id="name"
+            name="name"
+            placeholder="Nome"
+            minlength="2"
+            maxlength="40"
+            required
+          />
+          <span class="popup__input-error name-error"></span>
+          <input
+            type="text"
+            class="popup__input"
+            id="job"
+            name="text"
+            minlength="2"
+            maxlength="200"
+            placeholder="Sobre mim"
+            required
+          />
+          <span class="popup__input-error job-error"></span>
+          <button type="submit" class="popup__button-submit">Salvar</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup" id="Local-popup">
+      <div class="popup-local__container">
+        <button
+          class="popup-local__button"
+          aria-label="Close Popup"
+          type="button"
+        ></button>
+        <h2 class="popup-local__title">Novo Local</h2>
+        <form class="popup-local__form" id="popup-local_form" novalidate>
+          <input
+            type="text"
+            class="popup-local__input"
+            name="name"
+            id="popup-local-name"
+            placeholder="Titulo"
+            minlength="2"
+            maxlength="30"
+            required
+          />
+          <span class="popup__input-error popup-local-name-error"></span>
+          <input
+            type="url"
+            class="popup-local__input"
+            id="link"
+            name="popup-local-text"
+            placeholder="Link de imagem"
+            required
+          />
+          <span class="popup__input-error link-error"></span>
+          <button type="submit" class="popup-local__button-submit">
+            Criar
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="popup" id="Popup-photo">
+      <div class="popup-image__container">
+        <button class="popup-image__button"></button>
+        <img class="popup-image__photo" src="" alt="" />
+        <span class="popup-image__title"></span>
+      </div>
+    </div>
+    <template id="template-cards">
+      <div class="element">
+        <button class="element__remove-btn"></button>
+        <img class="element__image" src="" alt="" />
+        <div class="element__place">
+          <p class="element__text"></p>
+          <button class="element__button" type="button"></button>
+        </div>
+      </div>
+    </template>
+    <script src="./scripts/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+.popup-image__container {
+  max-height: 540px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
+  background-color: transparent;
+  position: relative;
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+  row-gap: 20px;
+}
+.popup-image__photo {
+  max-width: 816px;
+  max-height: 540px;
+  height: 100%;
+  margin: auto;
+  border: none;
+}
+.popup-image__title {
+  width: 291px;
+  height: 12px;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 1);
+  text-align: start;
+  justify-content: flex-start;
+}
+.popup-image__button {
+  background-image: url("../images/close.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  position: absolute;
+  border: none;
+  top: -40px;
+  right: -40px;
+  width: 26px;
+  height: 26px;
+}
+@media screen and (max-width: 320px) {
+  .popup-image__title {
+    max-width: 240px;
+  }
+  .popup-image__photo {
+    max-width: 240px;
+    max-height: 299px;
+  }
+  .popup-image__button {
+    width: 20px;
+    height: 20px;
+    top: -20px;
+    right: -20px;
+  }
+}

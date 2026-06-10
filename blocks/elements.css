@@ -1,0 +1,96 @@
+.elements {
+  max-width: 880px;
+  opacity: 1;
+  border-radius: 10px;
+  margin: 50px auto auto;
+  border: 1.5px solid rgba(0, 0, 0, 1);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 20px;
+}
+.element {
+  max-width: 282px;
+  height: 361px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 1);
+  position: relative;
+}
+.element__image {
+  max-width: 282px;
+  height: 282px;
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.element__place {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 15px 0 21px;
+}
+.element__text {
+  max-width: 246px;
+  font-family: "Inter";
+  font-weight: 900;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 1);
+}
+.element__button {
+  width: 21px;
+  height: 19px;
+  color: rgba(0, 0, 0, 1);
+  background-image: url("../images/like-inactive.svg");
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border: none;
+}
+.element__button:hover {
+  opacity: 0.5;
+}
+.element__button-like {
+  background-image: url("../images/like-active.svg");
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border: none;
+  width: 21px;
+  height: 19px;
+  color: rgba(0, 0, 0, 1);
+}
+.element__remove-btn {
+  background-image: url("../images/delete-icon.svg");
+  background-color: transparent;
+  background-size: 18px;
+  background-repeat: no-repeat;
+  border: none;
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  top: 18px;
+  right: 15px;
+}
+.element__remove-btn:hover {
+  opacity: 0.6;
+}
+@media screen and (max-width: 800px) {
+  .elements {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    margin: 50px 200px auto;
+  }
+}
+@media screen and (max-width: 320px) {
+  .elements {
+    max-width: 320px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+    margin: 0 auto;
+    margin-left: 19px;
+  }
+}

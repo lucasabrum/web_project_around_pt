@@ -1,0 +1,125 @@
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+.popup__opened {
+  display: flex;
+}
+.popup__container {
+  width: 430px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  padding: 34px 36px;
+  position: relative;
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.popup__button {
+  background-image: url("../images/close.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  position: absolute;
+  border: none;
+  top: -40px;
+  right: -40px;
+  width: 26px;
+  height: 26px;
+}
+.popup__button:hover {
+  opacity: 0.5;
+}
+.popup__title {
+  max-width: 330px;
+  font-family: "Inter";
+  justify-content: flex-start;
+  font-weight: 900;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 1);
+}
+.popup__form {
+  max-width: 358px;
+  display: flex;
+  flex-direction: column;
+}
+.popup__input {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 5px;
+  font-size: 16px;
+}
+.popup__input_type_error {
+  border-bottom-color: #ff0000;
+}
+.popup__input-error {
+  min-height: 30px;
+  color: #ff0000;
+  font-family: "Inter";
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  text-align: left;
+  visibility: hidden;
+}
+.popup__input-error_visible {
+  visibility: visible;
+}
+
+.popup__button-submit {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+}
+.popup__button-submit:hover {
+  opacity: 0.8;
+}
+.popup__button-submit_disabled {
+  background-color: #fff;
+  border: 1px solid #000;
+  color: #000;
+  cursor: default;
+  opacity: 0.2;
+}
+.popup__button-submit_disabled:hover {
+  opacity: 0.2;
+}
+@media screen and (max-width: 320px) {
+  .popup__container {
+    max-width: 238px;
+    max-height: 322px;
+  }
+  .popup__title {
+    max-width: 238px;
+  }
+  .popup__form {
+    max-width: 238px;
+  }
+  .popup__input {
+    max-width: 238px;
+    font-size: 14px;
+  }
+  .popup__button {
+    max-width: 238px;
+    top: -26px;
+    right: -26px;
+    width: 26px;
+    height: 26px;
+  }
+}
