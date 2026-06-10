@@ -34,7 +34,12 @@
   font-family: "Inter";
   font-weight: 900;
   font-size: 24px;
+  line-height: 29px;
   color: rgba(0, 0, 0, 1);
+  margin: 25px 0 31px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .element__button {
   width: 21px;
