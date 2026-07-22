@@ -1,3 +1,7 @@
+import Card from "./Card.js";
+import FormValidator from "./FormValidator.js";
+import { openPopup, closePopup, closeByOverlay } from "./utils.js";
+
 const editPopupButton = document.querySelector(".profile__edit-button");
 const editPopup = document.querySelector("#edit-pop-up");
 const closePopupButton = document.querySelector(".popup__button");
@@ -17,8 +21,16 @@ const cardLinkInput = document.querySelector("#link");
 const popupImage = document.querySelector("#Popup-photo");
 const buttonPopupImage = document.querySelector(".popup-image__button");
 
-const cardTemplate = document.querySelector("#template-cards").content;
+const cardTemplateSelector = "#template-cards";
 const cardContainer = document.querySelector(".elements");
+
+const validationConfig = {
+  inputSelector: "input",
+  submitButtonSelector: "button[type='submit']",
+  inactiveButtonClass: "popup__button-submit_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__input-error_visible",
+};
 
 const initialCards = [
   {
@@ -47,46 +59,44 @@ const initialCards = [
   },
 ];
 
-// Abre o pop-up recebido e ativa o fechamento pela tecla Esc.
-function openPopup(popup) {
-  popup.classList.add("popup__opened");
-  document.addEventListener("keydown", closeByEsc);
+const profileFormValidator = new FormValidator(validationConfig, profileForm);
+const cardFormValidator = new FormValidator(validationConfig, cardForm);
+
+// Abre o pop-up de imagem preenchido com os dados do cartao clicado.
+function handleCardClick(name, link) {
+  const popupPhoto = popupImage.querySelector(".popup-image__photo");
+  const popupTitle = popupImage.querySelector(".popup-image__title");
+
+  popupPhoto.src = link;
+  popupPhoto.alt = name;
+  popupTitle.textContent = name;
+  openPopup(popupImage);
 }
 
-// Fecha o pop-up recebido e remove o evento da tecla Esc.
-function closePopup(popup) {
-  popup.classList.remove("popup__opened");
-  document.removeEventListener("keydown", closeByEsc);
+// Cria uma instancia de Card e devolve o elemento pronto para ser inserido.
+function createCard(cardData) {
+  const card = new Card(cardData, cardTemplateSelector, { handleCardClick });
+  return card.generateCard();
 }
 
-// Fecha o pop-up aberto quando o usuario pressiona a tecla Esc.
-function closeByEsc(evt) {
-  if (evt.key === "Escape") {
-    const openedPopup = document.querySelector(".popup__opened");
-    closePopup(openedPopup);
-  }
+// Adiciona um cartao ao inicio do container.
+function renderCard(cardData) {
+  const cardElement = createCard(cardData);
+  cardContainer.prepend(cardElement);
 }
-
-// Fecha o pop-up quando o usuario clica na area escura fora da janela.
-function closeByOverlay(evt) {
-  if (evt.target.classList.contains("popup__opened")) {
-    closePopup(evt.target);
-  }
-}
-
 
 // Preenche o formulario com os dados atuais do perfil e abre o pop-up.
 function openEditPopup() {
   nameInput.value = profileName.textContent;
   jobInput.value = profileJob.textContent;
-  resetValidation(profileForm);
+  profileFormValidator.resetValidation();
   openPopup(editPopup);
 }
 
 // Limpa o formulario de novo local e abre o pop-up.
 function openAddPopup() {
   cardForm.reset();
-  resetValidation(cardForm);
+  cardFormValidator.resetValidation();
   openPopup(addPopup);
 }
 
@@ -102,45 +112,12 @@ function handleProfileSubmit(evt) {
 function handleCardSubmit(evt) {
   evt.preventDefault();
 
-  createCard({
+  renderCard({
     name: cardNameInput.value,
     link: cardLinkInput.value,
   });
 
   closePopup(addPopup);
-}
-
-// Monta um cartao, adiciona seus eventos e coloca o cartao na pagina.
-function createCard(card) {
-  const cardElement = cardTemplate.querySelector(".element").cloneNode(true);
-  const cardImage = cardElement.querySelector(".element__image");
-  const cardTitle = cardElement.querySelector(".element__text");
-  const likeButton = cardElement.querySelector(".element__button");
-  const removeButton = cardElement.querySelector(".element__remove-btn");
-
-  cardImage.src = card.link;
-  cardImage.alt = card.name;
-  cardTitle.textContent = card.name;
-
-  likeButton.addEventListener("click", () => {
-    likeButton.classList.toggle("element__button-like");
-  });
-
-  removeButton.addEventListener("click", () => {
-    cardElement.remove();
-  });
-
-  cardImage.addEventListener("click", () => {
-    const popupPhoto = popupImage.querySelector(".popup-image__photo");
-    const popupTitle = popupImage.querySelector(".popup-image__title");
-
-    popupPhoto.src = card.link;
-    popupPhoto.alt = card.name;
-    popupTitle.textContent = card.name;
-    openPopup(popupImage);
-  });
-
-  cardContainer.prepend(cardElement);
 }
 
 editPopupButton.addEventListener("click", openEditPopup);
@@ -157,6 +134,6 @@ document.querySelectorAll(".popup").forEach((popup) => {
   popup.addEventListener("mousedown", closeByOverlay);
 });
 
-setFormValidation(profileForm);
-setFormValidation(cardForm);
-initialCards.forEach(createCard);
+profileFormValidator.setEventListeners();
+cardFormValidator.setEventListeners();
+initialCards.forEach(renderCard);
