@@ -1,28 +1,18 @@
 import Card from "./Card.js";
 import FormValidator from "./FormValidator.js";
-import { openPopup, closePopup, closeByOverlay } from "./utils.js";
+import Section from "./Section.js";
+import Popup from "./Popup.js";
+import PopupWithImage from "./PopupWithImage.js";
+import PopupWithForm from "./PopupWithForm.js";
+import UserInfo from "./UserInfo.js";
 
 const editPopupButton = document.querySelector(".profile__edit-button");
-const editPopup = document.querySelector("#edit-pop-up");
-const closePopupButton = document.querySelector(".popup__button");
-const profileName = document.querySelector(".profile__title");
-const profileJob = document.querySelector(".profile__text");
-const profileForm = document.querySelector("#popup_form");
-const nameInput = document.querySelector("#name");
-const jobInput = document.querySelector("#job");
-
 const addLocalButton = document.querySelector(".profile__add-button");
-const addPopup = document.querySelector("#Local-popup");
-const closeLocalButton = document.querySelector(".popup-local__button");
-const cardForm = document.querySelector("#popup-local_form");
-const cardNameInput = document.querySelector("#popup-local-name");
-const cardLinkInput = document.querySelector("#link");
 
-const popupImage = document.querySelector("#Popup-photo");
-const buttonPopupImage = document.querySelector(".popup-image__button");
+const profileForm = document.querySelector("#popup_form");
+const cardForm = document.querySelector("#popup-local_form");
 
 const cardTemplateSelector = "#template-cards";
-const cardContainer = document.querySelector(".elements");
 
 const validationConfig = {
   inputSelector: "input",
@@ -62,15 +52,18 @@ const initialCards = [
 const profileFormValidator = new FormValidator(validationConfig, profileForm);
 const cardFormValidator = new FormValidator(validationConfig, cardForm);
 
-// Abre o pop-up de imagem preenchido com os dados do cartao clicado.
-function handleCardClick(name, link) {
-  const popupPhoto = popupImage.querySelector(".popup-image__photo");
-  const popupTitle = popupImage.querySelector(".popup-image__title");
+const userInfo = new UserInfo({
+  nameSelector: ".profile__title",
+  jobSelector: ".profile__text",
+});
 
-  popupPhoto.src = link;
-  popupPhoto.alt = name;
-  popupTitle.textContent = name;
-  openPopup(popupImage);
+// Pop-up que exibe a imagem ampliada de um cartao.
+const popupWithImage = new PopupWithImage("#Popup-photo");
+popupWithImage.setEventListeners();
+
+// Abre o pop-up de imagem com os dados do cartao clicado.
+function handleCardClick(name, link) {
+  popupWithImage.open(name, link);
 }
 
 // Cria uma instancia de Card e devolve o elemento pronto para ser inserido.
@@ -79,61 +72,53 @@ function createCard(cardData) {
   return card.generateCard();
 }
 
-// Adiciona um cartao ao inicio do container.
-function renderCard(cardData) {
-  const cardElement = createCard(cardData);
-  cardContainer.prepend(cardElement);
-}
+// Secao responsavel por renderizar a lista de cartoes na pagina.
+const cardSection = new Section(
+  {
+    items: initialCards,
+    renderer: (cardData) => {
+      cardSection.addItem(createCard(cardData));
+    },
+  },
+  ".elements"
+);
+
+// Pop-up de edicao de perfil.
+const editPopup = new PopupWithForm("#edit-pop-up", (formValues) => {
+  userInfo.setUserInfo({ name: formValues.name, job: formValues.text });
+  editPopup.close();
+});
+editPopup.setEventListeners();
+
+// Pop-up de criacao de um novo local (cartao).
+const addPopup = new PopupWithForm("#Local-popup", (formValues) => {
+  cardSection.addItem(
+    createCard({ name: formValues.name, link: formValues["popup-local-text"] })
+  );
+  addPopup.close();
+});
+addPopup.setEventListeners();
 
 // Preenche o formulario com os dados atuais do perfil e abre o pop-up.
 function openEditPopup() {
-  nameInput.value = profileName.textContent;
-  jobInput.value = profileJob.textContent;
+  const { name, job } = userInfo.getUserInfo();
+  profileForm.querySelector("#name").value = name;
+  profileForm.querySelector("#job").value = job;
   profileFormValidator.resetValidation();
-  openPopup(editPopup);
+  editPopup.open();
 }
 
 // Limpa o formulario de novo local e abre o pop-up.
 function openAddPopup() {
   cardForm.reset();
   cardFormValidator.resetValidation();
-  openPopup(addPopup);
-}
-
-// Salva as informacoes do formulario no perfil.
-function handleProfileSubmit(evt) {
-  evt.preventDefault();
-  profileName.textContent = nameInput.value;
-  profileJob.textContent = jobInput.value;
-  closePopup(editPopup);
-}
-
-// Cria um novo cartao com os dados digitados no formulario.
-function handleCardSubmit(evt) {
-  evt.preventDefault();
-
-  renderCard({
-    name: cardNameInput.value,
-    link: cardLinkInput.value,
-  });
-
-  closePopup(addPopup);
+  addPopup.open();
 }
 
 editPopupButton.addEventListener("click", openEditPopup);
-closePopupButton.addEventListener("click", () => closePopup(editPopup));
-profileForm.addEventListener("submit", handleProfileSubmit);
-
 addLocalButton.addEventListener("click", openAddPopup);
-closeLocalButton.addEventListener("click", () => closePopup(addPopup));
-cardForm.addEventListener("submit", handleCardSubmit);
-
-buttonPopupImage.addEventListener("click", () => closePopup(popupImage));
-
-document.querySelectorAll(".popup").forEach((popup) => {
-  popup.addEventListener("mousedown", closeByOverlay);
-});
 
 profileFormValidator.setEventListeners();
 cardFormValidator.setEventListeners();
-initialCards.forEach(renderCard);
+
+cardSection.renderItems();
