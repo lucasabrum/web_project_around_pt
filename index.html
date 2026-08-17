@@ -22,11 +22,20 @@
         </header>
         <main class="content">
           <div class="profile">
-            <img
-              class="profile__avatar"
-              src="./images/avatar.jpg"
-              alt="imagem jacques"
-            />
+            <div class="profile__avatar-container">
+              <img
+                class="profile__avatar"
+                src="./images/avatar.jpg"
+                alt="imagem jacques"
+              />
+              <!-- NOVO: ícone que aparece ao passar o mouse sobre a foto,
+                   abre o pop-up de troca de avatar (requisito 9) -->
+              <button
+                class="profile__avatar-edit-button"
+                type="button"
+                aria-label="Editar foto de perfil"
+              ></button>
+            </div>
             <div class="profile__info">
               <h1 class="profile__title">Jacques Cousteau</h1>
               <p class="profile__text">Explorador</p>
@@ -108,6 +117,41 @@
           <button type="submit" class="popup-local__button-submit">
             Criar
           </button>
+        </form>
+      </div>
+    </div>
+    <div class="popup" id="delete-confirm-popup">
+      <div class="popup__container">
+        <button
+          class="popup__button"
+          aria-label="Close Popup"
+          type="button"
+        ></button>
+        <h2 class="popup__title">Tem certeza?</h2>
+        <form class="popup__form" id="delete-confirm_form" novalidate>
+          <button type="submit" class="popup__button-submit">Sim</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup" id="avatar-popup">
+      <div class="popup__container">
+        <button
+          class="popup__button"
+          aria-label="Close Popup"
+          type="button"
+        ></button>
+        <h2 class="popup__title">Alterar a foto do perfil</h2>
+        <form class="popup__form" id="avatar_form" novalidate>
+          <input
+            type="url"
+            class="popup__input"
+            id="avatar-link"
+            name="avatar"
+            placeholder="Link da imagem"
+            required
+          />
+          <span class="popup__input-error avatar-link-error"></span>
+          <button type="submit" class="popup__button-submit">Salvar</button>
         </form>
       </div>
     </div>

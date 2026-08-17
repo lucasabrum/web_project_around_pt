@@ -1,13 +1,24 @@
 export default class Card {
-  constructor({ name, link }, templateSelector, { handleCardClick }) {
+
+  constructor(
+    { _id, name, link, owner, isLiked },
+    templateSelector,
+    userId,
+    { handleCardClick, handleLikeClick, handleDeleteClick }
+  ) {
+    this._id = _id;
     this._name = name;
     this._link = link;
+    this._owner = owner;
+    this._isLiked = isLiked;
     this._templateSelector = templateSelector;
+    this._userId = userId;
     this._handleCardClick = handleCardClick;
+    this._handleLikeClick = handleLikeClick;
+    this._handleDeleteClick = handleDeleteClick;
   }
 
-  // Busca o template no DOM e devolve uma cópia pronta para ser preenchida.
-  _getTemplate() {
+   _getTemplate() {
     return document
       .querySelector(this._templateSelector)
       .content.querySelector(".element")
@@ -16,27 +27,34 @@ export default class Card {
 
   // Adiciona todos os ouvintes de evento do cartão.
   _setEventListeners() {
-    this._likeButton.addEventListener("click", () => this._handleLikeClick());
-    this._removeButton.addEventListener("click", () =>
-      this._handleRemoveClick()
-    );
+    this._likeButton.addEventListener("click", () => this._onLikeClick());
+    this._removeButton.addEventListener("click", () => this._onRemoveClick());
     this._cardImage.addEventListener("click", () => this._handleImageClick());
   }
 
-  // Alterna o estado "curtido" do cartão.
-  _handleLikeClick() {
-    this._likeButton.classList.toggle("element__button-like");
+
+  _onLikeClick() {
+    this._handleLikeClick(this._id, this._isLiked);
   }
 
-  // Remove o cartão da página.
-  _handleRemoveClick() {
-    this._element.remove();
-    this._element = null;
+   _onRemoveClick() {
+    this._handleDeleteClick(this._id, this);
   }
 
   // Delega a abertura do pop-up de imagem para quem instanciou o cartão.
   _handleImageClick() {
     this._handleCardClick(this._name, this._link);
+  }
+
+  setIsLiked(isLiked) {
+    this._isLiked = isLiked;
+    this._likeButton.classList.toggle("element__button-like", isLiked);
+  }
+
+ 
+  removeFromDOM() {
+    this._element.remove();
+    this._element = null;
   }
 
   // Monta o cartão preenchido e com os eventos já configurados.
@@ -50,6 +68,14 @@ export default class Card {
     this._cardImage.src = this._link;
     this._cardImage.alt = this._name;
     this._cardTitle.textContent = this._name;
+
+    // Mostra o estado de curtida vindo do servidor.
+    this.setIsLiked(this._isLiked);
+
+   
+    if (this._owner !== this._userId) {
+      this._removeButton.remove();
+    }
 
     this._setEventListeners();
 

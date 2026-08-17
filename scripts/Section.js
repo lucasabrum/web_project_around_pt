@@ -5,9 +5,9 @@ export default class Section {
     this._container = document.querySelector(containerSelector);
   }
 
-  // Renderiza cada item da lista usando a funcao de callback renderer.
-  renderItems() {
-    this._items.forEach((item) => {
+  // Renderiza os elementos DOM de acordo com a função renderer.
+  renderItems(items = this._items) {
+    items.forEach((item) => {
       this._renderer(item);
     });
   }

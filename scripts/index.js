@@ -4,13 +4,21 @@ import Section from "./Section.js";
 import Popup from "./Popup.js";
 import PopupWithImage from "./PopupWithImage.js";
 import PopupWithForm from "./PopupWithForm.js";
+import PopupWithConfirmation from "./PopupWithConfirmation.js";
 import UserInfo from "./UserInfo.js";
+import api from "./Api.js";
 
 const editPopupButton = document.querySelector(".profile__edit-button");
 const addLocalButton = document.querySelector(".profile__add-button");
 
+const avatarEditButton = document.querySelector(
+  ".profile__avatar-edit-button"
+);
+
 const profileForm = document.querySelector("#popup_form");
 const cardForm = document.querySelector("#popup-local_form");
+
+const avatarForm = document.querySelector("#avatar_form");
 
 const cardTemplateSelector = "#template-cards";
 
@@ -22,39 +30,20 @@ const validationConfig = {
   errorClass: "popup__input-error_visible",
 };
 
-const initialCards = [
-  {
-    name: "Vale de Yosemite",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
-  },
-  {
-    name: "Lago Louise",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
-  },
-  {
-    name: "Montanhas Carecas",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_bald-mountains.jpg",
-  },
-  {
-    name: "Latemar",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_latemar.jpg",
-  },
-  {
-    name: "Parque Nacional da...",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_vanoise.jpg",
-  },
-  {
-    name: "Lago di Braies",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lago.jpg",
-  },
-];
+
+let currentUserId = null;
 
 const profileFormValidator = new FormValidator(validationConfig, profileForm);
 const cardFormValidator = new FormValidator(validationConfig, cardForm);
+// validação também para o formulário de avatar.
+const avatarFormValidator = new FormValidator(validationConfig, avatarForm);
 
+// avatarSelector adicionado para o UserInfo conseguir ler/atualizar
+// a foto de perfil, além de nome e "sobre".
 const userInfo = new UserInfo({
   nameSelector: ".profile__title",
   jobSelector: ".profile__text",
+  avatarSelector: ".profile__avatar",
 });
 
 // Pop-up que exibe a imagem ampliada de um cartao.
@@ -66,16 +55,47 @@ function handleCardClick(name, link) {
   popupWithImage.open(name, link);
 }
 
+// chamado quando o usuário clica no coração de um cartão.
+function handleLikeClick(cardId, isLiked, cardInstance) {
+  api
+    .changeLikeCardStatus(cardId, isLiked)
+    .then((updatedCard) => {
+      cardInstance.setIsLiked(updatedCard.isLiked);
+    })
+    .catch((err) => console.log(err));
+}
+
+// chamado quando o usuário clica na lixeira de um cartão.
+function handleDeleteClick(cardId, cardInstance) {
+  deleteConfirmPopup.setSubmitAction(() => {
+    deleteConfirmPopup.setLoading(true);
+    api
+      .deleteCard(cardId)
+      .then(() => {
+        cardInstance.removeFromDOM();
+        deleteConfirmPopup.close();
+      })
+      .catch((err) => console.log(err))
+      .finally(() => deleteConfirmPopup.setLoading(false));
+  });
+  deleteConfirmPopup.open();
+}
+
 // Cria uma instancia de Card e devolve o elemento pronto para ser inserido.
 function createCard(cardData) {
-  const card = new Card(cardData, cardTemplateSelector, { handleCardClick });
+  const card = new Card(cardData, cardTemplateSelector, currentUserId, {
+    handleCardClick,
+    handleLikeClick: (cardId, isLiked) =>
+      handleLikeClick(cardId, isLiked, card),
+    handleDeleteClick: (cardId) => handleDeleteClick(cardId, card),
+  });
   return card.generateCard();
 }
 
 // Secao responsavel por renderizar a lista de cartoes na pagina.
 const cardSection = new Section(
   {
-    items: initialCards,
+    items: [],
     renderer: (cardData) => {
       cardSection.addItem(createCard(cardData));
     },
@@ -85,19 +105,56 @@ const cardSection = new Section(
 
 // Pop-up de edicao de perfil.
 const editPopup = new PopupWithForm("#edit-pop-up", (formValues) => {
-  userInfo.setUserInfo({ name: formValues.name, job: formValues.text });
-  editPopup.close();
+  editPopup.setLoading(true);
+  api
+    .editProfile(formValues.name, formValues.text)
+    .then((userData) => {
+      userInfo.setUserInfo({ name: userData.name, job: userData.about });
+      editPopup.close();
+    })
+    .catch((err) => console.log(err))
+    .finally(() => editPopup.setLoading(false));
 });
 editPopup.setEventListeners();
 
 // Pop-up de criacao de um novo local (cartao).
 const addPopup = new PopupWithForm("#Local-popup", (formValues) => {
-  cardSection.addItem(
-    createCard({ name: formValues.name, link: formValues["popup-local-text"] })
-  );
-  addPopup.close();
+  addPopup.setLoading(true);
+  api
+    .addCard(formValues.name, formValues["popup-local-text"])
+    .then((newCard) => {
+      cardSection.addItem(createCard(newCard));
+      addPopup.close();
+    })
+    .catch((err) => console.log(err))
+    .finally(() => addPopup.setLoading(false));
 });
 addPopup.setEventListeners();
+
+// Pop-up de confirmação de exclusão. 
+const deleteConfirmPopup = new PopupWithConfirmation(
+  "#delete-confirm-popup",
+  () => {}
+);
+deleteConfirmPopup.setEventListeners();
+
+// pop-up de troca de avatar.
+const avatarPopup = new PopupWithForm("#avatar-popup", (formValues) => {
+  avatarPopup.setLoading(true);
+  api
+    .updateAvatar(formValues.avatar)
+    .then((userData) => {
+      userInfo.setUserInfo({
+        name: userData.name,
+        job: userData.about,
+        avatar: userData.avatar,
+      });
+      avatarPopup.close();
+    })
+    .catch((err) => console.log(err))
+    .finally(() => avatarPopup.setLoading(false));
+});
+avatarPopup.setEventListeners();
 
 // Preenche o formulario com os dados atuais do perfil e abre o pop-up.
 function openEditPopup() {
@@ -115,10 +172,31 @@ function openAddPopup() {
   addPopup.open();
 }
 
+// limpa o formulário de avatar e abre o pop-up correspondente.
+function openAvatarPopup() {
+  avatarForm.reset();
+  avatarFormValidator.resetValidation();
+  avatarPopup.open();
+}
+
 editPopupButton.addEventListener("click", openEditPopup);
 addLocalButton.addEventListener("click", openAddPopup);
+avatarEditButton.addEventListener("click", openAvatarPopup);
 
 profileFormValidator.setEventListeners();
 cardFormValidator.setEventListeners();
+avatarFormValidator.setEventListeners();
 
-cardSection.renderItems();
+// ponto de entrada real dos dados. 
+api
+  .getAppInfo()
+  .then(([userData, cards]) => {
+    currentUserId = userData._id;
+    userInfo.setUserInfo({
+      name: userData.name,
+      job: userData.about,
+      avatar: userData.avatar,
+    });
+    cardSection.renderItems(cards);
+  })
+  .catch((err) => console.log(err));
